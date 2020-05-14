@@ -1,0 +1,14 @@
+[package]
+name = "bc-helper"
+version = "0.1.0"
+authors = ["Ray Xu <megrxu@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "bchelper_lib"
+path = "src/lib.rs"
+
+[dependencies]
+chrono = "0.4"
+serde_yaml = "0.8.12"
+serde = { version = "1.0", features = ["derive"] }

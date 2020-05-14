@@ -1,0 +1,31 @@
+* Activate accounts
+
+# Financial Accounts
+1998-04-03 open Assets:Cash:CNY CNY
+1998-04-03 open Assets:Cash:Alipay CNY
+1998-04-03 open Assets:Cash:Wechat CNY
+1998-04-03 open Assets:Bank:CN:CCB:UND CNY
+1998-04-03 open Assets:Bank:CN:CCB:HIGH CNY
+1998-04-03 open Assets:Bank:CN:PBC:UND CNY
+1998-04-03 open Assets:Bank:CN:ICBC:GRA CNY
+1998-04-03 open Assets:Fund CNY
+1998-04-03 open Assets:Cash:StuCard CNY
+1998-04-03 open Liabilities:CreditCard:CN:Huabei CNY
+1998-04-03 open Liabilities:CreditCard:CN:CCB CNY, USD
+1998-04-03 open Equity:Opening-Balances
+
+# Relationship Accounts
+1998-04-03 open Assets:Receivables
+1998-04-03 open Liabilities:Payable
+
+* Init accounts
+2020-03-01 pad Assets:Cash:CNY Equity:Opening-Balances
+2020-03-01 pad Assets:Cash:Alipay Equity:Opening-Balances
+2020-03-01 pad Assets:Cash:StuCard Equity:Opening-Balances
+2020-03-01 pad Assets:Cash:Wechat Equity:Opening-Balances
+2020-03-01 pad Assets:Bank:CN:CCB:UND Equity:Opening-Balances
+2020-03-01 pad Assets:Bank:CN:PBC:UND Equity:Opening-Balances
+2020-03-01 pad Assets:Bank:CN:ICBC:GRA Equity:Opening-Balances
+2020-03-01 pad Liabilities:CreditCard:CN:Huabei Equity:Opening-Balances
+2020-03-01 pad Liabilities:CreditCard:CN:CCB Equity:Opening-Balances
+
