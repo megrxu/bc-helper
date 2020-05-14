@@ -1,11 +1,11 @@
 use crate::transaction::*;
 use crate::utils::*;
-use chrono::prelude::*;
-use chrono::{NaiveDate, TimeZone};
+use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::collections::HashMap;
 use std::fs::read_to_string;
+use std::str::FromStr;
 
 struct ParseTimeError;
 
@@ -13,7 +13,6 @@ struct ParseTimeError;
 pub struct Config {
     pub currency: String,
     pub timezone: String,
-    pub indent: usize,
     pub operating_file: String,
     pub account_files: Vec<String>,
 }
@@ -47,12 +46,7 @@ impl HelperInstance {
     /// inspired by [costflow](https://docs.costflow.io/syntax/) but more powerful
     pub fn parse(&self, line: &str) -> Transaction {
         // Datetime
-        let datetime: Date<Utc>;
-        if line.contains("|") {
-            datetime = Utc::today(); // TODO: parse from string
-        } else {
-            datetime = Utc::today();
-        }
+        let datetime = NaiveDate::from_str("2020-02-20").unwrap();
 
         // Note and Payee
         let note = String::default();
@@ -77,5 +71,9 @@ impl HelperInstance {
             items,
             status,
         }
+    }
+
+    pub fn export(&self, transaction: &Transaction) -> String {
+        format!("{}", transaction)
     }
 }
