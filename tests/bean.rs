@@ -8,17 +8,17 @@ fn test_bean_export() {
         datetime: NaiveDate::from_str("2020-05-05").unwrap(),
         payee: String::from("微信"),
         note: String::from("提现"),
-        tags: vec!["Nintendo".to_string(), "Fuck".to_string()],
-        refs: vec!["Transaction".to_string()],
+        tags: vec!["#Wechat".to_string(), "#Cash".to_string()],
+        refs: vec!["^Transaction".to_string()],
         items: vec![
             Item {
                 name: "Assets:Bank:CN:CCB:UND".to_string(),
-                amount: 200.0,
+                amount: Some(200.0),
                 unit: "CNY".to_string(),
             },
             Item {
                 name: "Assets:Cash:Wechat".to_string(),
-                amount: -200.0,
+                amount: None,
                 unit: "CNY".to_string(),
             },
         ],
@@ -26,9 +26,9 @@ fn test_bean_export() {
     };
     assert_eq!(
         format!("{}", t),
-        r#"2020-05-05 * "提现" "微信" #Nintendo #Fuck ^Transaction
+        r#"2020-05-05 * "微信" "提现" #Wechat #Cash ^Transaction
   Assets:Bank:CN:CCB:UND                            +200.00 CNY
-  Assets:Cash:Wechat                                -200.00 CNY
+  Assets:Cash:Wechat
 "#
     );
 }

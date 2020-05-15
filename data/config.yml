@@ -1,4 +1,4 @@
 currency: CNY
-timezone: "UTC+8"
+timezone: +8
 account_files: ["data/account.bean", "data/categories.bean"]
 operating_file: "data/tmp.bean"

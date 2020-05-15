@@ -21,7 +21,7 @@ pub struct Transaction {
 #[derive(Debug)]
 pub struct Item {
     pub name: String,
-    pub amount: f32,
+    pub amount: Option<f32>,
     pub unit: String,
 }
 
@@ -39,13 +39,13 @@ impl Display for Transaction {
         write!(
             f,
             "{} {} \"{}\" \"{}\"",
-            self.datetime, self.status, self.note, self.payee
+            self.datetime, self.status, self.payee, self.note
         )?;
         for tag in self.tags.iter() {
-            write!(f, " #{}", tag)?;
+            write!(f, " {}", tag)?;
         }
         for _ref in self.refs.iter() {
-            write!(f, " ^{}", _ref)?;
+            write!(f, " {}", _ref)?;
         }
         write!(f, "\n")?;
         for item in self.items.iter() {
@@ -57,6 +57,9 @@ impl Display for Transaction {
 
 impl Display for Item {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{:<50}{:+>7.2} {}", self.name, self.amount, self.unit)
+        match self.amount {
+            Some(amount) => write!(f, "{:<50}{:+>7.2} {}", self.name, amount, self.unit),
+            _ => write!(f, "{}", self.name),
+        }
     }
 }
