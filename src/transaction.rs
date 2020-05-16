@@ -83,14 +83,14 @@ impl Transaction {
 impl Item {
     pub fn markdown(&self) -> String {
         match self.amount {
-            Some(amount) => format!("{:<30}{:+>7.2} {}", self.name, amount, self.unit),
+            Some(amount) => format!("{:<30}{:>+7.2} {}", self.name, amount, self.unit),
             _ => format!("{}", self.name),
         }
     }
 
     pub fn export(&self) -> String {
         match self.amount {
-            Some(amount) => format!("{:<50}{:+>7.2} {}", self.name, amount, self.unit),
+            Some(amount) => format!("{:<50}{:>+7.2} {}", self.name, amount, self.unit),
             _ => format!("{}", self.name),
         }
     }
