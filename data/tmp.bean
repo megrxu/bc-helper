@@ -1,0 +1,5 @@
+
+2020-05-16UTC * "支付宝" "收款" #transaction ^Time
+  Assets:Receivables                                +100.00 CNY
+  Income:Salary:Research
+  Assets:Cash:Alipay                                -200.00 CNY

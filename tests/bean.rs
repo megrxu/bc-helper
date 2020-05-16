@@ -1,11 +1,9 @@
 use bchelper_lib::transaction::*;
-use chrono::NaiveDate;
-use std::str::FromStr;
 
 #[test]
 fn test_bean_export() {
     let t = Transaction {
-        datetime: NaiveDate::from_str("2020-05-05").unwrap(),
+        datetime: "2020-05-05".to_string(),
         payee: String::from("微信"),
         note: String::from("提现"),
         tags: vec!["#Wechat".to_string(), "#Cash".to_string()],
@@ -25,8 +23,9 @@ fn test_bean_export() {
         status: TransactionStatus::Cleared,
     };
     assert_eq!(
-        format!("{}", t),
-        r#"2020-05-05 * "微信" "提现" #Wechat #Cash ^Transaction
+        t.export(),
+        r#"
+2020-05-05 * "微信" "提现" #Wechat #Cash ^Transaction
   Assets:Bank:CN:CCB:UND                            +200.00 CNY
   Assets:Cash:Wechat
 "#

@@ -1,4 +1,3 @@
-use chrono::prelude::*;
 use std::fmt::Display;
 
 #[derive(Debug)]
@@ -9,7 +8,7 @@ pub enum TransactionStatus {
 
 #[derive(Debug)]
 pub struct Transaction {
-    pub datetime: NaiveDate,
+    pub datetime: String,
     pub payee: String,
     pub note: String,
     pub tags: Vec<String>,
@@ -34,32 +33,65 @@ impl Display for TransactionStatus {
     }
 }
 
-impl Display for Transaction {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} {} \"{}\" \"{}\"",
+impl Transaction {
+    pub fn export(&self) -> String {
+        let mut res: String;
+        res = format!(
+            "\n{} {} \"{}\" \"{}\"",
             self.datetime, self.status, self.payee, self.note
-        )?;
+        );
         for tag in self.tags.iter() {
-            write!(f, " {}", tag)?;
+            res += &format!(" {}", tag);
         }
         for _ref in self.refs.iter() {
-            write!(f, " {}", _ref)?;
+            res += &format!(" {}", _ref);
         }
-        write!(f, "\n")?;
+        res += "\n";
         for item in self.items.iter() {
-            writeln!(f, "  {}", item)?;
+            res += &format!("  {}\n", item.export());
         }
-        write!(f, "")
+        res
+    }
+
+    pub fn markdown(&self) -> String {
+        let mut res = String::default();
+        res += &format!(
+            "**{} {} \"{}\" \"{}\"",
+            self.datetime,
+            match self.status {
+                TransactionStatus::Cleared => "Cleared",
+                TransactionStatus::Pending => "Pending",
+            },
+            self.payee,
+            self.note
+        );
+        for tag in self.tags.iter() {
+            res += &format!(" {}", tag);
+        }
+        for _ref in self.refs.iter() {
+            res += &format!(" {}", _ref);
+        }
+        res += "**\n```\n";
+        for item in self.items.iter() {
+            res += &format!("{}\n", item.markdown());
+        }
+        res += "```";
+        res
     }
 }
 
-impl Display for Item {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Item {
+    pub fn markdown(&self) -> String {
         match self.amount {
-            Some(amount) => write!(f, "{:<50}{:+>7.2} {}", self.name, amount, self.unit),
-            _ => write!(f, "{}", self.name),
+            Some(amount) => format!("{:<30}{:+>7.2} {}", self.name, amount, self.unit),
+            _ => format!("{}", self.name),
+        }
+    }
+
+    pub fn export(&self) -> String {
+        match self.amount {
+            Some(amount) => format!("{:<50}{:+>7.2} {}", self.name, amount, self.unit),
+            _ => format!("{}", self.name),
         }
     }
 }

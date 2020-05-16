@@ -1,12 +1,12 @@
 use crate::transaction::*;
 use crate::utils::*;
-use chrono::NaiveDate;
+use chrono::prelude::*;
+use chrono::Duration;
 use serde::{Deserialize, Serialize};
 use serde_yaml;
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::fs::read_to_string;
-use std::str::FromStr;
 
 #[derive(Debug)]
 pub enum ParseError {
@@ -18,7 +18,7 @@ pub enum ParseError {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub currency: String,
-    pub timezone: i32,
+    pub timezone: i64,
     pub operating_file: String,
     pub account_files: Vec<String>,
 }
@@ -95,17 +95,20 @@ impl HelperInstance {
         let unparsed_line: String = line.to_string();
 
         // Datetime
-        let datetime: NaiveDate;
+        let datetime: String;
         let tokens = unparsed_line.split("|").collect::<Vec<&str>>();
         let unparsed_line: String;
         if tokens.len() == 2 {
             datetime = match tokens[0] {
-                _ => NaiveDate::from_str(tokens[0]).unwrap(),
+                _ => tokens[0].trim().to_string(),
             };
             unparsed_line = tokens[1].trim().to_string();
         } else {
             // default is the current time, based on the timezone in config file
-            datetime = NaiveDate::from_str("2020-02-20").unwrap();
+            datetime = format!(
+                "{}",
+                (Utc::now() + Duration::hours(self.default_config.timezone)).format("%Y-%m-%d")
+            );
             unparsed_line = tokens[0].trim().to_string();
         }
 
@@ -188,10 +191,6 @@ impl HelperInstance {
         } else {
             Err(ParseError::ParseItemError)
         }
-    }
-
-    pub fn export(&self, transaction: &Transaction) -> String {
-        format!("{}", transaction)
     }
 }
 
