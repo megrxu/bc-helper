@@ -52,7 +52,7 @@ impl HelperInstance {
             let tokens = item_str.trim().split(" ").collect::<Vec<&str>>();
             match tokens.len() {
                 1 => {
-                    if let Some(name) = self.addr_map.get(tokens[0]) {
+                    if let Some(name) = self.addr_map.get(&tokens[0].to_lowercase()) {
                         items.push(Item {
                             name: name.to_string(),
                             amount: None,
@@ -61,9 +61,10 @@ impl HelperInstance {
                     }
                 }
                 2 => {
-                    if let (Some(name), Ok(amount)) =
-                        (self.addr_map.get(tokens[0]), tokens[1].parse::<f32>())
-                    {
+                    if let (Some(name), Ok(amount)) = (
+                        self.addr_map.get(&tokens[0].to_lowercase()),
+                        tokens[1].parse::<f32>(),
+                    ) {
                         items.push(Item {
                             name: name.to_string(),
                             amount: Some(amount),
@@ -72,9 +73,10 @@ impl HelperInstance {
                     }
                 }
                 3 => {
-                    if let (Some(name), Ok(amount)) =
-                        (self.addr_map.get(tokens[0]), tokens[1].parse::<f32>())
-                    {
+                    if let (Some(name), Ok(amount)) = (
+                        self.addr_map.get(&tokens[0].to_lowercase()),
+                        tokens[1].parse::<f32>(),
+                    ) {
                         items.push(Item {
                             name: name.to_string(),
                             amount: Some(amount),
