@@ -3,7 +3,6 @@ use crate::utils::*;
 use chrono::prelude::*;
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
-use serde_yaml;
 use std::collections::HashMap;
 use std::fmt::Display;
 use std::fs::read_to_string;
@@ -44,12 +43,11 @@ impl HelperInstance {
     }
 
     pub fn parse_items(&self, line: &str) -> Result<Vec<Item>, ParseError> {
-        let tokens = line.trim().split(",").collect::<Vec<&str>>();
+        let tokens = line.trim().split(',').collect::<Vec<&str>>();
         let mut items: Vec<Item> = vec![];
-        let mut iter = tokens.iter();
 
-        while let Some(item_str) = iter.next() {
-            let tokens = item_str.trim().split(" ").collect::<Vec<&str>>();
+        for item_str in tokens.iter() {
+            let tokens = item_str.trim().split(' ').collect::<Vec<&str>>();
             match tokens.len() {
                 1 => {
                     if let Some(name) = self.addr_map.get(&tokens[0].to_lowercase()) {
@@ -98,26 +96,26 @@ impl HelperInstance {
 
         // Datetime
         let datetime: String;
-        let tokens = unparsed_line.split("|").collect::<Vec<&str>>();
-        let unparsed_line: String;
-        if tokens.len() == 2 {
-            datetime = match tokens[0] {
-                _ => tokens[0].trim().to_string(),
+        let tokens = unparsed_line.split('|').collect::<Vec<&str>>();
+        let unparsed_line = if tokens.len() == 2 {
+            datetime = match tokens.get(0) {
+                Some(token) => token.trim().to_string(),
+                None => "".into(),
             };
-            unparsed_line = tokens[1].trim().to_string();
+            tokens[1].trim().to_string()
         } else {
             // default is the current time, based on the timezone in config file
             datetime = format!(
                 "{}",
                 (Utc::now() + Duration::hours(self.default_config.timezone)).format("%Y-%m-%d")
             );
-            unparsed_line = tokens[0].trim().to_string();
-        }
+            tokens[0].trim().to_string()
+        };
 
         // Status
         let status: TransactionStatus;
         // check for the first letter
-        let unparsed_line = match unparsed_line.chars().nth(0) {
+        let unparsed_line = match unparsed_line.chars().next() {
             Some('!') => {
                 status = TransactionStatus::Pending;
                 unparsed_line.chars().skip(1).collect::<String>()
@@ -134,20 +132,20 @@ impl HelperInstance {
         };
 
         // Note and Payee are included in '"'
-        let tokens = unparsed_line.split("\"").collect::<Vec<&str>>();
+        let tokens = unparsed_line.split('\"').collect::<Vec<&str>>();
         let note: String;
         let payee: String;
         let unparsed_line: String;
 
         if tokens.len() == 3 {
             // no note
-            note = tokens.iter().nth(1).unwrap().to_string();
+            note = tokens.get(1).unwrap().to_string();
             payee = String::default();
             unparsed_line = tokens.iter().last().unwrap().trim().to_string();
         } else if tokens.len() == 5 {
             // with note
-            payee = tokens.iter().nth(1).unwrap().to_string();
-            note = tokens.iter().nth(3).unwrap().to_string();
+            payee = tokens.get(1).unwrap().to_string();
+            note = tokens.get(3).unwrap().to_string();
             unparsed_line = tokens.iter().last().unwrap().trim().to_string();
         } else {
             return Err(ParseError::ParseNotePayeeError);
@@ -156,16 +154,16 @@ impl HelperInstance {
         // Tags and Refs
         let mut tags = vec![];
         let mut refs = vec![];
-        let tokens = unparsed_line.split(" ").collect::<Vec<&str>>();
+        let tokens = unparsed_line.split(' ').collect::<Vec<&str>>();
         let mut token_iter = tokens.iter();
         let mut unparsed_line = String::default();
         while let Some(token) = token_iter.next() {
-            if token.len() == 0 {
+            if token.is_empty() {
                 break;
             }
-            if token.chars().nth(0).unwrap() == '#' {
+            if token.starts_with('#') {
                 tags.push(token.to_string());
-            } else if token.chars().nth(0).unwrap() == '^' {
+            } else if token.starts_with('^') {
                 refs.push(token.to_string());
             } else {
                 unparsed_line += token;
@@ -173,7 +171,7 @@ impl HelperInstance {
                 break;
             }
         }
-        while let Some(token) = token_iter.next() {
+        for token in token_iter {
             unparsed_line += token;
             unparsed_line += " ";
         }

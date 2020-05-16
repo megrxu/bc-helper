@@ -84,14 +84,14 @@ impl Item {
     pub fn markdown(&self) -> String {
         match self.amount {
             Some(amount) => format!("{:<30}{:>+7.2} {}", self.name, amount, self.unit),
-            _ => format!("{}", self.name),
+            _ => self.name.to_string(),
         }
     }
 
     pub fn export(&self) -> String {
         match self.amount {
             Some(amount) => format!("{:<50}{:>+7.2} {}", self.name, amount, self.unit),
-            _ => format!("{}", self.name),
+            _ => self.name.to_string(),
         }
     }
 }

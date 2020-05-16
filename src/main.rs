@@ -6,7 +6,7 @@ use telegram_bot::*;
 use tokio::io::AsyncWriteExt;
 
 #[derive(Clap)]
-#[clap(version = "0.1.0", author = "Ray Xu. <megrxu@gmail.com>")]
+#[clap(version = "0.1.1", author = "Ray Xu. <megrxu@gmail.com>")]
 struct Opts {
     /// config file
     #[clap(short, long, default_value = "config.yml")]
