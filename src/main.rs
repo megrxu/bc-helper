@@ -33,23 +33,44 @@ async fn main() -> Result<(), Error> {
             UpdateKind::Message(message) => {
                 if let MessageKind::Text { ref data, .. } = message.kind {
                     if message.from.id == UserId::new(auth) {
-                        match instance.parse(data) {
-                            Ok(result) => {
-                                let mut reply =
-                                    message.text_reply(format!("{}", result.markdown()));
-                                api.send(SendChatAction::new(message.chat, ChatAction::Typing))
+                        match data.as_str() {
+                            "/accounts" => {
+                                api.send(SendChatAction::new(&message.chat, ChatAction::Typing))
                                     .await?;
-                                api.send(reply.parse_mode(ParseMode::Markdown)).await?;
-                                let mut file = tokio::fs::OpenOptions::new()
-                                    .append(true)
-                                    .open(&instance.default_config.operating_file)
-                                    .await
-                                    .unwrap();
-                                file.write_all(&result.export().bytes().collect::<Vec<u8>>()).await.unwrap();
+                                let mut result = String::default();
+                                for name in instance.namelist.iter() {
+                                    result += &format!("{}\n", &name);
+                                }
+                                api.send(message.text_reply(result)).await?;
                             }
-                            Err(e) => {
-                                api.send(message.text_reply(format!("{}", e))).await?;
+                            "/config" => {
+                                api.send(SendChatAction::new(&message.chat, ChatAction::Typing))
+                                    .await?;
+                                let result = format!("{:?}", instance.default_config);
+                                api.send(message.text_reply(result)).await?;
                             }
+                            others => match instance.parse(others) {
+                                Ok(result) => {
+                                    api.send(SendChatAction::new(
+                                        &message.chat,
+                                        ChatAction::Typing,
+                                    ))
+                                    .await?;
+                                    let mut reply = message.text_reply(result.markdown());
+                                    api.send(reply.parse_mode(ParseMode::Markdown)).await?;
+                                    let mut file = tokio::fs::OpenOptions::new()
+                                        .append(true)
+                                        .open(&instance.default_config.operating_file)
+                                        .await
+                                        .unwrap();
+                                    file.write_all(&result.export().bytes().collect::<Vec<u8>>())
+                                        .await
+                                        .unwrap();
+                                }
+                                Err(e) => {
+                                    api.send(message.text_reply(format!("{}", e))).await?;
+                                }
+                            },
                         }
                     }
                 }
